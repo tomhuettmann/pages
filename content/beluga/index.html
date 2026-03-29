@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Beluga Cinema Overview</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .timestamp {
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            position: sticky;
+            top: 0;
+            color: #fff;
+            font-size: 2.5rem;
+            margin: 0 auto 30px auto;
+            font-weight: 500;
+            z-index: 1000;
+            padding: 8px 20px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .movie-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .monday-badge {
+            position: absolute;
+            background-color: #10b981;
+            width: 100%;
+            padding: 5px 0;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .monday {
+            background-color: #10b981;
+        }
+
+        .movie-card a {
+            display: block;
+            text-decoration: none;
+        }
+
+        .movie-poster {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .movie-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .movie-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .movie-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .movie-title+.movie-details {
+            margin-top: auto;
+        }
+
+        .cinema-name {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .movie-time {
+            color: #ec4899;
+            font-weight: 600;
+        }
+
+        .movie-price {
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .seat-bar-container {
+            position: relative;
+            height: 28px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 12px 0;
+            margin-top: auto;
+        }
+
+        .seat-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+
+        .seat-bar-fill.medium {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .seat-bar-fill.high {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .seat-bar-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1f2937;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        @media (min-width: 769px) {
+            .timestamp {
+                position: fixed;
+                top: 10px;
+                left: auto;
+                right: 10px;
+                bottom: auto;
+                background: rgba(0, 0, 0, 0.4);
+                border-radius: 12px;
+                padding: 8px 16px;
+                z-index: 1000;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+                padding-bottom: 50px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .movies-grid {
+                gap: 16px;
+                margin-bottom: 40px;
+            }
+
+            .movie-info {
+                padding: 12px;
+            }
+
+            .movie-title {
+                font-size: 0.875rem;
+            }
+
+            .movie-details {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+                padding-bottom: 50px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 32px;
+            }
+
+            .movie-info {
+                padding: 10px;
+            }
+
+            .seat-bar-label {
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <section class="section">
+            <h1>Today</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394250&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="seat-bar-container">
+                            <div class="seat-bar-fill "
+                                style="width: 13%;"></div>
+                            <span class="seat-bar-label">20 / 152 (13%)</span>
+                        </div>
+                        <div class="movie-details">
+                            <span class="cinema-name">Kino 1</span> • <span class="movie-time">20:15</span>
+                            <span class="movie-price">10.3€</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394425&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="seat-bar-container">
+                            <div class="seat-bar-fill "
+                                style="width: 37%;"></div>
+                            <span class="seat-bar-label">13 / 35 (37%)</span>
+                        </div>
+                        <div class="movie-details">
+                            <span class="cinema-name">Kino 7</span> • <span class="movie-time">20:15</span>
+                            <span class="movie-price">10.3€</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394321&bgswitch=false&resize=false">
+                        <img src="images/3462486981.jpg" alt="GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info">
+                        <h2 class="movie-title">GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16</h2>
+                        <div class="seat-bar-container">
+                            <div class="seat-bar-fill "
+                                style="width: 9%;"></div>
+                            <span class="seat-bar-label">2 / 22 (9%)</span>
+                        </div>
+                        <div class="movie-details">
+                            <span class="cinema-name">Kino 4</span> • <span class="movie-time">20:30</span>
+                            <span class="movie-price">11.3€, 12.3€</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394388&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="seat-bar-container">
+                            <div class="seat-bar-fill "
+                                style="width: 22%;"></div>
+                            <span class="seat-bar-label">8 / 37 (22%)</span>
+                        </div>
+                        <div class="movie-details">
+                            <span class="cinema-name">Kino 5 - Lounge</span> • <span class="movie-time">20:30</span>
+                            <span class="movie-price">11.3€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h1>Kino 1</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3482227255&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 12:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394444&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394244&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 17:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394250&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427036&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427042&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 17:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3463311283&bgswitch=false&resize=false">
+                        <img src="images/2185812924.jpg" alt="HORROR SNEAK PREVIEW D, ab 18" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">HORROR SNEAK PREVIEW D, ab 18</h2>
+                        <div class="movie-details">Monday, 30.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416016&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416022&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 17:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3453266618&bgswitch=false&resize=false">
+                        <img src="images/3424192253.jpg" alt="MISS KOBAYASHI`S DRAGON MAID: EIN EINSAMER DRACHE SEHNT SICH NACH LIEBE OmU, FSK folgt (OmU)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MISS KOBAYASHI`S DRAGON MAID: EIN EINSAMER DRACHE SEHNT SICH NACH LIEBE OmU, FSK folgt (OmU)</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3476998941&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 12:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3476998927&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3476998908&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3476998889&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464725593&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Thursday, 02.04. - 12:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464725586&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Thursday, 02.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464725580&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Thursday, 02.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464725565&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Thursday, 02.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748916&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Friday, 03.04. - 12:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748922&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Friday, 03.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748929&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Friday, 03.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748938&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Friday, 03.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748998&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Saturday, 04.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749004&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Saturday, 04.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749011&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Saturday, 04.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749059&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Sunday, 05.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749065&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Sunday, 05.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749071&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Sunday, 05.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3440091242&bgswitch=false&resize=false">
+                        <img src="images/3200271857_211_300.jpg" alt="De lütten Schietbüddel: DIE HÄSCHENSCHULE - JAGD NACH DEM GOLDENEN EI D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">De lütten Schietbüddel: DIE HÄSCHENSCHULE - JAGD NACH DEM GOLDENEN EI D, ab 0</h2>
+                        <div class="movie-details">Monday, 06.04. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749126&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Monday, 06.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749132&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Monday, 06.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749138&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Monday, 06.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749197&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 12:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749215&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749225&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3381418713&bgswitch=false&resize=false">
+                        <img src="images/1422295812_211_300.jpg" alt="Best of Cinema - SICARIO D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Best of Cinema - SICARIO D, ab 16</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749262&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 08.04. - 12:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749268&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Wednesday, 08.04. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749275&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM D, FSK folgt</h2>
+                        <div class="movie-details">Wednesday, 08.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749308&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 08.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3450869768&bgswitch=false&resize=false">
+                        <img src="images/3488600006.jpg" alt="BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING - OV (OV)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: LIVE VIEWING - OV (OV)</h2>
+                        <div class="movie-details">Saturday, 11.04. - 11:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3446071108&bgswitch=false&resize=false">
+                        <img src="images/3261645875.jpg" alt="KunstKino:DIE FARBEN DER ZEIT D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KunstKino:DIE FARBEN DER ZEIT D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 14.04. - 19:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3217591136&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="ISABEL VARELL - LIVE - Die guten alten Zeiten sind jetzt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">ISABEL VARELL - LIVE - Die guten alten Zeiten sind jetzt</h2>
+                        <div class="movie-details">Thursday, 16.04. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3456400247&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="KILL BILL: THE WHOLE BLOODY AFFAIR D, ab 18" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KILL BILL: THE WHOLE BLOODY AFFAIR D, ab 18</h2>
+                        <div class="movie-details">Friday, 17.04. - 19:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3450884632&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING - OV (OV)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: LIVE VIEWING - OV (OV)</h2>
+                        <div class="movie-details">Saturday, 18.04. - 11:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3456400235&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="KILL BILL: THE WHOLE BLOODY AFFAIR D, ab 18" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KILL BILL: THE WHOLE BLOODY AFFAIR D, ab 18</h2>
+                        <div class="movie-details">Saturday, 18.04. - 18:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3374598050&bgswitch=false&resize=false">
+                        <img src="images/2185812924.jpg" alt="SNEAK PREVIEW 04/26 D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">SNEAK PREVIEW 04/26 D, ab 16</h2>
+                        <div class="movie-details">Monday, 20.04. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3477979773&bgswitch=false&resize=false">
+                        <img src="images/3481162991.jpg" alt="RBO 2025/26: DIE ZAUBERFLÖTE (ROYAL OPERA) OmU, keine Angabe (OmU)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">RBO 2025/26: DIE ZAUBERFLÖTE (ROYAL OPERA) OmU, keine Angabe (OmU)</h2>
+                        <div class="movie-details">Tuesday, 21.04. - 19:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3462881012&bgswitch=false&resize=false">
+                        <img src="images/2875041878.jpg" alt="FRIDAY NIGHT TRASH DOUBLE (ROLAND EMMERICH)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FRIDAY NIGHT TRASH DOUBLE (ROLAND EMMERICH)</h2>
+                        <div class="movie-details">Friday, 24.04. - 19:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479245261&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 - Ladies Night Vorpremiere" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 - Ladies Night Vorpremiere</h2>
+                        <div class="movie-details">Wednesday, 29.04. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3419505320&bgswitch=false&resize=false">
+                        <img src="images/2277511030.jpg" alt="WERNER 1 - BEINHART" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">WERNER 1 - BEINHART</h2>
+                        <div class="movie-details">Thursday, 30.04. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3419464145&bgswitch=false&resize=false">
+                        <img src="images/2118224443.jpg" alt="De lütten Schietbüddel - OH WIE SCHÖN IST PANAMA D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">De lütten Schietbüddel - OH WIE SCHÖN IST PANAMA D, ab 0</h2>
+                        <div class="movie-details">Friday, 01.05. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3420156882&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="JAMES BOND ABEND 1/26" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">JAMES BOND ABEND 1/26</h2>
+                        <div class="movie-details">Friday, 01.05. - 19:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3419464132&bgswitch=false&resize=false">
+                        <img src="images/2118224443.jpg" alt="De lütten Schietbüddel - OH WIE SCHÖN IST PANAMA D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">De lütten Schietbüddel - OH WIE SCHÖN IST PANAMA D, ab 0</h2>
+                        <div class="movie-details">Saturday, 02.05. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3359500179&bgswitch=false&resize=false">
+                        <img src="images/2118883535.jpg" alt="PRETTY WOMAN - Das Musical & Film Event mit MISHA KOVAR D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">PRETTY WOMAN - Das Musical & Film Event mit MISHA KOVAR D, ab 12</h2>
+                        <div class="movie-details">Saturday, 02.05. - 19:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3424071911&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="KultKino: EIN SCHWEINCHEN NAMENS BABE D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KultKino: EIN SCHWEINCHEN NAMENS BABE D, ab 0</h2>
+                        <div class="movie-details">Sunday, 03.05. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479417049&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Sunday, 03.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479417064&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Monday, 04.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3381419306&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="Best of Cinema - DIE DREI TAGE DES CONDOR D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Best of Cinema - DIE DREI TAGE DES CONDOR D, ab 16</h2>
+                        <div class="movie-details">Tuesday, 05.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479417035&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Wednesday, 06.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3439865642&bgswitch=false&resize=false">
+                        <img src="images/2135803576.jpg" alt="DINONUGGETSABEND MIT JURASSIC PARK (Dinonuggets ab 19:30 Uhr)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DINONUGGETSABEND MIT JURASSIC PARK (Dinonuggets ab 19:30 Uhr)</h2>
+                        <div class="movie-details">Friday, 08.05. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3437984094&bgswitch=false&resize=false">
+                        <img src="images/1173231099_211_300.jpg" alt="Louis de Funès Abend" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Louis de Funès Abend</h2>
+                        <div class="movie-details">Saturday, 09.05. - 19:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3446072115&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="KunstKino: MAPPLETHORPE D, keine Angabe" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KunstKino: MAPPLETHORPE D, keine Angabe</h2>
+                        <div class="movie-details">Tuesday, 12.05. - 19:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3477225973&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="Technikchef Matze und Chef Kai gucken STARGATE D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Technikchef Matze und Chef Kai gucken STARGATE D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 13.05. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3470791378&bgswitch=false&resize=false">
+                        <img src="images/1261083754_211_300.jpg" alt="STAND BY ME - DAS GEHEIMNIS EINES SOMMERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">STAND BY ME - DAS GEHEIMNIS EINES SOMMERS D, ab 6</h2>
+                        <div class="movie-details">Sunday, 17.05. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3411004142&bgswitch=false&resize=false">
+                        <img src="images/2185812924.jpg" alt="SNEAK PREVIEW 05/26 D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">SNEAK PREVIEW 05/26 D, ab 16</h2>
+                        <div class="movie-details">Monday, 18.05. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3381419818&bgswitch=false&resize=false">
+                        <img src="images/2227950329.jpg" alt="Best of Cinema - SPACEBALLS D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Best of Cinema - SPACEBALLS D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 02.06. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3477947250&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="LESUNG: Cay Rademacher live im Beluga Kino" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">LESUNG: Cay Rademacher live im Beluga Kino</h2>
+                        <div class="movie-details">Friday, 05.06. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3446628590&bgswitch=false&resize=false">
+                        <img src="images/1712408115_211_300.jpg" alt="KunstKino: FINAL PORTRAIT D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KunstKino: FINAL PORTRAIT D, ab 0</h2>
+                        <div class="movie-details">Tuesday, 09.06. - 19:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3477947682&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="LESUNG: Tibor Rode live im Beluga Kino" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">LESUNG: Tibor Rode live im Beluga Kino</h2>
+                        <div class="movie-details">Friday, 12.06. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3470388811&bgswitch=false&resize=false">
+                        <img src="images/2279400551.jpg" alt="Harry Potter Marathon 1-4" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Harry Potter Marathon 1-4</h2>
+                        <div class="movie-details">Saturday, 13.06. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3442949906&bgswitch=false&resize=false">
+                        <img src="images/2185812924.jpg" alt="SNEAK PREVIEW 06/26 D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">SNEAK PREVIEW 06/26 D, ab 16</h2>
+                        <div class="movie-details">Monday, 15.06. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3485764738&bgswitch=false&resize=false">
+                        <img src="images/3085601060.jpg" alt="Theaterleiter Onno guckt: SCOTT PILGRIM GEGEN REST DER WELT D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Theaterleiter Onno guckt: SCOTT PILGRIM GEGEN REST DER WELT D, ab 12</h2>
+                        <div class="movie-details">Friday, 26.06. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3484575060&bgswitch=false&resize=false">
+                        <img src="images/2344425932.jpg" alt="Harry Potter Marathon 5 - 7.2" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">Harry Potter Marathon 5 - 7.2</h2>
+                        <div class="movie-details">Saturday, 27.06. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3473377850&bgswitch=false&resize=false">
+                        <img src="images/2185812924.jpg" alt="SNEAK PREVIEW 07/26" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">SNEAK PREVIEW 07/26</h2>
+                        <div class="movie-details">Monday, 20.07. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3486760774&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="LIVE KONZERT: MOVIES IN CONCERT: Das Dialog Quartett spielt von Harry Potter bis Star Wars" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">LIVE KONZERT: MOVIES IN CONCERT: Das Dialog Quartett spielt von Harry Potter bis Star Wars</h2>
+                        <div class="movie-details">Friday, 09.10. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3300101326&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="LESUNG - JOE BAUSCH live im Beluga Kino" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">LESUNG - JOE BAUSCH live im Beluga Kino</h2>
+                        <div class="movie-details">Saturday, 31.10. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3359488641&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="LIVE KONZERT: LARS´ CHRISTMAS mit LARS REDLICH D, keine Angabe" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">LIVE KONZERT: LARS´ CHRISTMAS mit LARS REDLICH D, keine Angabe</h2>
+                        <div class="movie-details">Saturday, 28.11. - 20:00</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h1>Kino 2</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394327&bgswitch=false&resize=false">
+                        <img src="images/3367584080.jpg" alt="WOODWALKERS 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">WOODWALKERS 2 D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 11:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394256&bgswitch=false&resize=false">
+                        <img src="images/3362770252.jpg" alt="G.O.A.T. – BOCK AUF GROSSE SPRÜNGE D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">G.O.A.T. – BOCK AUF GROSSE SPRÜNGE D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 14:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394262&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394268&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416028&bgswitch=false&resize=false">
+                        <img src="images/3362770252.jpg" alt="G.O.A.T. – BOCK AUF GROSSE SPRÜNGE D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">G.O.A.T. – BOCK AUF GROSSE SPRÜNGE D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 14:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416055&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 16:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416048&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427120&bgswitch=false&resize=false">
+                        <img src="images/3367584080.jpg" alt="WOODWALKERS 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">WOODWALKERS 2 D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427168&bgswitch=false&resize=false">
+                        <img src="images/3362770252.jpg" alt="G.O.A.T. – BOCK AUF GROSSE SPRÜNGE D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">G.O.A.T. – BOCK AUF GROSSE SPRÜNGE D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3382949862&bgswitch=false&resize=false">
+                        <img src="images/3434416990.jpg" alt="RBO LIVE 2025/26: SIEGFRIED (ROYAL OPERA) OmU, FSK folgt (OmU)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">RBO LIVE 2025/26: SIEGFRIED (ROYAL OPERA) OmU, FSK folgt (OmU)</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 18:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3476998975&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3476998959&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429334&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464725609&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Thursday, 02.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464725557&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Thursday, 02.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748944&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Friday, 03.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464748954&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Friday, 03.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749017&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Saturday, 04.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749023&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Saturday, 04.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749079&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Sunday, 05.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749096&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Sunday, 05.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749144&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Monday, 06.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749150&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Monday, 06.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749231&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749255&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749237&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Tuesday, 07.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749283&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 08.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464749329&bgswitch=false&resize=false">
+                        <img src="images/3354178682.jpg" alt="DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER SUPER MARIO GALAXY FILM - 3D D, FSK folgt (3D)</h2>
+                        <div class="movie-details">Wednesday, 08.04. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479766771&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 - Ladies Night Vorpremiere" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 - Ladies Night Vorpremiere</h2>
+                        <div class="movie-details">Wednesday, 29.04. - 20:01</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479418390&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Thursday, 30.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479418405&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Friday, 01.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479418420&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Saturday, 02.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3479418435&bgswitch=false&resize=false">
+                        <img src="images/3387045274.jpg" alt="DER TEUFEL TRÄGT PRADA 2 D, FSK folgt" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER TEUFEL TRÄGT PRADA 2 D, FSK folgt</h2>
+                        <div class="movie-details">Tuesday, 05.05. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3472430353&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="KultKino: HIGHLANDER – ES KANN NUR EINEN GEBEN D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KultKino: HIGHLANDER – ES KANN NUR EINEN GEBEN D, ab 16</h2>
+                        <div class="movie-details">Friday, 29.05. - 20:15</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h1>Kino 3</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481466156&bgswitch=false&resize=false">
+                        <img src="images/3364994210.jpg" alt="CHECKER TOBI 3 – DIE HEIMLICHE HERRSCHERIN DER ERDE D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">CHECKER TOBI 3 – DIE HEIMLICHE HERRSCHERIN DER ERDE D, ab 0</h2>
+                        <div class="movie-details">Sunday, 29.03. - 11:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394274&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 14:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394431&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 16:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394286&bgswitch=false&resize=false">
+                        <img src="images/3372057811.jpg" alt="EIN FAST PERFEKTER ANTRAG D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">EIN FAST PERFEKTER ANTRAG D, ab 0</h2>
+                        <div class="movie-details">Sunday, 29.03. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416151&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 14:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416035&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 17:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416041&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 19:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427150&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427180&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427089&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429402&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 14:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429438&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 17:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429444&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3450873196&bgswitch=false&resize=false">
+                        <img src="images/3488600006.jpg" alt="BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: RE-LIVE VIEWING - OV (OV)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BTS WORLD TOUR ‘ARIRANG’ IN GOYANG: RE-LIVE VIEWING - OV (OV)</h2>
+                        <div class="movie-details">Saturday, 11.04. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3421649986&bgswitch=false&resize=false">
+                        <img src="images/3444155158.jpg" alt="JAZZY - CHAOS IM REGENWALD - PYJAMA PARTY VORPREMIERE" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">JAZZY - CHAOS IM REGENWALD - PYJAMA PARTY VORPREMIERE</h2>
+                        <div class="movie-details">Sunday, 12.04. - 14:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3450884389&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: RE-LIVE VIEWING - OV (OV)" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BTS WORLD TOUR ‘ARIRANG’ IN JAPAN: RE-LIVE VIEWING - OV (OV)</h2>
+                        <div class="movie-details">Saturday, 18.04. - 15:30</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h1>Kino 4</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394299&bgswitch=false&resize=false">
+                        <img src="images/3367585912.jpg" alt="MEIN FREUND BARRY D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MEIN FREUND BARRY D, ab 0</h2>
+                        <div class="movie-details">Sunday, 29.03. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394314&bgswitch=false&resize=false">
+                        <img src="images/3380863720.jpg" alt="NOUVELLE VAGUE D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">NOUVELLE VAGUE D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394321&bgswitch=false&resize=false">
+                        <img src="images/3462486981.jpg" alt="GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16</h2>
+                        <div class="movie-details">Sunday, 29.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3482226814&bgswitch=false&resize=false">
+                        <img src="images/3440495809.jpg" alt="TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416072&bgswitch=false&resize=false">
+                        <img src="images/3367585912.jpg" alt="MEIN FREUND BARRY D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">MEIN FREUND BARRY D, ab 0</h2>
+                        <div class="movie-details">Monday, 30.03. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416078&bgswitch=false&resize=false">
+                        <img src="images/3380863720.jpg" alt="NOUVELLE VAGUE D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">NOUVELLE VAGUE D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416084&bgswitch=false&resize=false">
+                        <img src="images/3462486981.jpg" alt="GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16</h2>
+                        <div class="movie-details">Monday, 30.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427095&bgswitch=false&resize=false">
+                        <img src="images/3347861243.jpg" alt="DIE DREI ??? – TOTENINSEL D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE DREI ??? – TOTENINSEL D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427048&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 15:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427108&bgswitch=false&resize=false">
+                        <img src="images/3380863720.jpg" alt="NOUVELLE VAGUE D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">NOUVELLE VAGUE D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427114&bgswitch=false&resize=false">
+                        <img src="images/3462486981.jpg" alt="GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429376&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429352&bgswitch=false&resize=false">
+                        <img src="images/3367585912.jpg" alt="MEIN FREUND BARRY D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MEIN FREUND BARRY D, ab 0</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481430355&bgswitch=false&resize=false">
+                        <img src="images/3380863720.jpg" alt="NOUVELLE VAGUE D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">NOUVELLE VAGUE D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429358&bgswitch=false&resize=false">
+                        <img src="images/3462486981.jpg" alt="GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">GOOD LUCK, HAVE FUN, DON'T DIE D, ab 16</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 20:30</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h1>Kino 5 - Lounge</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394407&bgswitch=false&resize=false">
+                        <img src="images/3440498436.jpg" alt="DIE WILDE NORDSEE - NATUR, DIE SICH NICHT ZÄHMEN LÄSST D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE WILDE NORDSEE - NATUR, DIE SICH NICHT ZÄHMEN LÄSST D, ab 0</h2>
+                        <div class="movie-details">Sunday, 29.03. - 11:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394400&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Sunday, 29.03. - 13:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394376&bgswitch=false&resize=false">
+                        <img src="images/3440495809.jpg" alt="TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394382&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394388&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416090&bgswitch=false&resize=false">
+                        <img src="images/3367584080.jpg" alt="WOODWALKERS 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">WOODWALKERS 2 D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3484637945&bgswitch=false&resize=false">
+                        <img src="images/3440495809.jpg" alt="TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416096&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416102&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427102&bgswitch=false&resize=false">
+                        <img src="images/3367585912.jpg" alt="MEIN FREUND BARRY D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MEIN FREUND BARRY D, ab 0</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 13:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427126&bgswitch=false&resize=false">
+                        <img src="images/3440495809.jpg" alt="TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427132&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427138&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3482499929&bgswitch=false&resize=false">
+                        <img src="images/3367584080.jpg" alt="WOODWALKERS 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">WOODWALKERS 2 D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481430392&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 15:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481430361&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429364&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 20:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3456400756&bgswitch=false&resize=false">
+                        <img src="images/309588352_211_300.jpg" alt="KILL BILL: THE WHOLE BLOODY AFFAIR D, ab 18" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">KILL BILL: THE WHOLE BLOODY AFFAIR D, ab 18</h2>
+                        <div class="movie-details">Sunday, 19.04. - 17:00</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h1>Kino 6 - Arthouse</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394280&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 12:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394438&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Sunday, 29.03. - 15:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394413&bgswitch=false&resize=false">
+                        <img src="images/3439063102.jpg" alt="30 AND WILD D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">30 AND WILD D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481413564&bgswitch=false&resize=false">
+                        <img src="images/3344180189.jpg" alt="SCREAM 7 D, ab 16" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">SCREAM 7 D, ab 16</h2>
+                        <div class="movie-details">Sunday, 29.03. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481466150&bgswitch=false&resize=false">
+                        <img src="images/3364994210.jpg" alt="CHECKER TOBI 3 – DIE HEIMLICHE HERRSCHERIN DER ERDE D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">CHECKER TOBI 3 – DIE HEIMLICHE HERRSCHERIN DER ERDE D, ab 0</h2>
+                        <div class="movie-details">Monday, 30.03. - 13:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416115&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Monday, 30.03. - 15:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416121&bgswitch=false&resize=false">
+                        <img src="images/3440498436.jpg" alt="DIE WILDE NORDSEE - NATUR, DIE SICH NICHT ZÄHMEN LÄSST D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DIE WILDE NORDSEE - NATUR, DIE SICH NICHT ZÄHMEN LÄSST D, ab 0</h2>
+                        <div class="movie-details">Monday, 30.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416127&bgswitch=false&resize=false">
+                        <img src="images/3439063102.jpg" alt="30 AND WILD D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">30 AND WILD D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427144&bgswitch=false&resize=false">
+                        <img src="images/3348415983.jpg" alt="ZOOMANIA 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">ZOOMANIA 2 D, ab 6</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 13:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427162&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 15:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427156&bgswitch=false&resize=false">
+                        <img src="images/3439063102.jpg" alt="30 AND WILD D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">30 AND WILD D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 17:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3482005662&bgswitch=false&resize=false">
+                        <img src="images/3403966625.jpg" alt="MARTY SUPREME D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MARTY SUPREME D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3482217200&bgswitch=false&resize=false">
+                        <img src="images/3348415983.jpg" alt="ZOOMANIA 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">ZOOMANIA 2 D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 13:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481430373&bgswitch=false&resize=false">
+                        <img src="images/3440495809.jpg" alt="TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">TIERISCH ABGEFAHREN - RETTET DIE PETS! D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 15:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481430380&bgswitch=false&resize=false">
+                        <img src="images/3436596584.jpg" alt="FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">FÜR IMMER EIN TEIL VON DIR - REMINDERS OF HIM D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 17:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429370&bgswitch=false&resize=false">
+                        <img src="images/3439063102.jpg" alt="30 AND WILD D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">30 AND WILD D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 20:15</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section">
+            <h1>Kino 7</h1>
+            <div class="movies-grid">
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464651939&bgswitch=false&resize=false">
+                        <img src="images/3486762996_211_300.jpg" alt="BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe</h2>
+                        <div class="movie-details">Sunday, 29.03. - 11:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464651914&bgswitch=false&resize=false">
+                        <img src="images/3486762996_211_300.jpg" alt="BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe</h2>
+                        <div class="movie-details">Sunday, 29.03. - 12:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394394&bgswitch=false&resize=false">
+                        <img src="images/3348415983.jpg" alt="ZOOMANIA 2 D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">ZOOMANIA 2 D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 14:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394419&bgswitch=false&resize=false">
+                        <img src="images/3403966625.jpg" alt="MARTY SUPREME D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MARTY SUPREME D, ab 12</h2>
+                        <div class="movie-details">Sunday, 29.03. - 16:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481394425&bgswitch=false&resize=false">
+                        <img src="images/3380875904.jpg" alt="HOPPERS D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HOPPERS D, ab 6</h2>
+                        <div class="movie-details">Sunday, 29.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416133&bgswitch=false&resize=false">
+                        <img src="images/3448234502.jpg" alt="DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">DIE SCHATZSUCHE IM BLAUMEISENTAL D, ab 0</h2>
+                        <div class="movie-details">Monday, 30.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464651951&bgswitch=false&resize=false">
+                        <img src="images/3486762996_211_300.jpg" alt="BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe</h2>
+                        <div class="movie-details">Monday, 30.03. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3482119366&bgswitch=false&resize=false">
+                        <img src="images/3365051369.jpg" alt="ACH, DIESE LÜCKE, DIESE ENTSETZLICHE LÜCKE D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">ACH, DIESE LÜCKE, DIESE ENTSETZLICHE LÜCKE D, ab 6</h2>
+                        <div class="movie-details">Monday, 30.03. - 16:45</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481416139&bgswitch=false&resize=false">
+                        <img src="images/3403966625.jpg" alt="MARTY SUPREME D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">MARTY SUPREME D, ab 12</h2>
+                        <div class="movie-details">Monday, 30.03. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427174&bgswitch=false&resize=false">
+                        <img src="images/3440498436.jpg" alt="DIE WILDE NORDSEE - NATUR, DIE SICH NICHT ZÄHMEN LÄSST D, ab 0" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DIE WILDE NORDSEE - NATUR, DIE SICH NICHT ZÄHMEN LÄSST D, ab 0</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 13:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3464651976&bgswitch=false&resize=false">
+                        <img src="images/3486762996_211_300.jpg" alt="BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">BLUEY IM KINO: „PLAYDATES“ - KOLLEKTION D, keine Angabe</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 15:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427082&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 16:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481427076&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Tuesday, 31.03. - 20:15</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429340&bgswitch=false&resize=false">
+                        <img src="images/3434395006.jpg" alt="HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">HORST SCHLÄMMER SUCHT DAS GLÜCK D, ab 6</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 14:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429346&bgswitch=false&resize=false">
+                        <img src="images/3358245841.jpg" alt="DER ASTRONAUT – PROJECT HAIL MARY D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">DER ASTRONAUT – PROJECT HAIL MARY D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 16:30</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3481429382&bgswitch=false&resize=false">
+                        <img src="images/3403966625.jpg" alt="MARTY SUPREME D, ab 12" class="movie-poster">
+                    </a>
+                    <div class="movie-info ">
+                        <h2 class="movie-title">MARTY SUPREME D, ab 12</h2>
+                        <div class="movie-details">Wednesday, 01.04. - 20:00</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <div class="monday-badge">🎉 Monday Special</div>
+                    <a href="https://booking.cinetixx.de/frontend/index.html?cinemaId=301802645&showId=3453351808&bgswitch=false&resize=false">
+                        <img src="images/3424192253.jpg" alt="MISS KOBAYASHI`S DRAGON MAID: EIN EINSAMER DRACHE SEHNT SICH NACH LIEBE OmU, FSK folgt (OmU)" class="movie-poster">
+                    </a>
+                    <div class="movie-info monday">
+                        <h2 class="movie-title">MISS KOBAYASHI`S DRAGON MAID: EIN EINSAMER DRACHE SEHNT SICH NACH LIEBE OmU, FSK folgt (OmU)</h2>
+                        <div class="movie-details">Monday, 06.04. - 11:00</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="timestamp">20:05</div>
+
+
+</body>
+
+</html>
