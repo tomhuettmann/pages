@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <h1>Custom Products</h1>
+
+    <!-- Add custom product -->
+    <section class="section">
+        <h2>Add Product</h2>
+        <form id="custom-form" class="mt">
+            <input type="text" id="c-n" placeholder="Name" required>
+            <input type="number" step="1" min="1" inputmode="numeric" id="c-k" placeholder="kcal per 100g" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="c-c" placeholder="Carbs per 100g" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="c-p" placeholder="Protein per 100g" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="c-f" placeholder="Fat per 100g" required>
+            <input type="number" step="1" min="1" inputmode="numeric" id="c-u" placeholder="Portion size (g)" required>
+            <button type="submit" class="mt">Save Product</button>
+        </form>
+    </section>
+
+    <!-- Custom products list -->
+    <section class="section">
+        <h2>My Products</h2>
+        <div id="custom-list"></div>
+    </section>
+
+    <!-- Export -->
+    <section class="section">
+        <h2>Export</h2>
+        <p>Copy this JSON to add your custom products to the server database:</p>
+        <pre id="export-output"></pre>
+        <button id="export-btn">Generate Export</button>
+    </section>
+
+    
+    <h1>All Products</h1>
+
+    <!-- All products -->
+    <section class="section">
+        <div id="all-products-list"></div>
+    </section>
+
+    <footer>
+        <a href="index.html">Tracker</a> ·
+        <a href="terms.html">Terms</a>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.getElementById('custom-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const n = document.getElementById('c-n').value.trim();
+            if (!n) return;
+            const id = crypto.randomUUID();
+            const product = { n: n, u: safeNum(parseInt(document.getElementById('c-u').value), 100) };
+            for (const k of NUTRIENTS) product[k] = safeNum(parseFloat(document.getElementById('c-' + k).value));
+            customProducts[id] = product;
+            saveCustomProducts();
+            e.target.reset();
+            renderCustomList();
+        });
+
+        document.getElementById('export-btn').addEventListener('click', () => {
+            const lines = Object.entries(customProducts)
+                .map(([id, p]) => '  ' + JSON.stringify(id) + ': ' + JSON.stringify(p) + ',');
+            document.getElementById('export-output').textContent = lines.join('\n');
+        });
+
+        renderCustomList();
+        renderAllProducts();
+    </script>
+</body>
+
+</html>
