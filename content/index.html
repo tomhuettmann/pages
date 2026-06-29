@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Food Tracker</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css?v=fd4f544b">
+</head>
+
+<body>
+    <h1>Food Tracker</h1>
+
+    <!-- Totals -->
+    <section class="section">
+        <table class="totals-table">
+            <thead>
+                <tr>
+                    <th>kcal</th>
+                    <th>Fat</th>
+                    <th>Carbs</th>
+                    <th>Protein</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="total-k" class="totals">0</td>
+                    <td id="total-f" class="totals">0</td>
+                    <td id="total-c" class="totals">0</td>
+                    <td id="total-p" class="totals">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Add product -->
+    <section class="section">
+        <h2>Add Product</h2>
+        <div class="search-row">
+        <input type="text" id="search-input" placeholder="Search products..." autocomplete="off">
+        <button type="button" id="scan-search-btn" class="scan-btn" title="Barcode scannen">📷</button>
+    </div>
+        <div id="search-results" class="hidden"></div>
+        <div id="amount-section" class="hidden mt">
+            <label id="selected-label"></label>
+            <input type="number" step="1" min="1" inputmode="numeric" id="amount-input" placeholder="Amount in grams">
+            <select id="meal-select">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snacks">Snacks</option>
+            </select>
+            <button id="add-btn" class="mt">Add</button>
+        </div>
+    </section>
+
+    <!-- Quick entry -->
+    <details>
+        <summary>Quick Entry</summary>
+        <form id="quick-form" class="mt">
+            <input type="text" id="q-n" placeholder="Name" required>
+            <input type="number" step="1" min="1" inputmode="numeric" id="q-k" placeholder="kcal (total)" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="q-f" placeholder="Fat (g, total)">
+            <input type="number" step=".01" min="0" inputmode="decimal" id="q-c" placeholder="Carbs (g, total)">
+            <input type="number" step=".01" min="0" inputmode="decimal" id="q-p" placeholder="Protein (g, total)">
+            <select id="q-meal-select">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snacks">Snacks</option>
+            </select>
+            <button type="submit" class="mt">Add</button>
+        </form>
+    </details>
+
+    <!-- Log -->
+    <section class="section">
+        <h2>Log</h2>
+        <div id="log-list"></div>
+    </section>
+
+    <!-- Reset -->
+    <section class="section">
+        <button class="danger hidden" id="reset-btn">Reset Log</button>
+    </section>
+
+    <h1>Products</h1>
+
+        <section class="section">
+            <h2>Add Custom Product</h2>
+            <form id="custom-form" class="mt">
+                <input type="text" id="c-n" placeholder="Name" required>
+                <input type="number" step="1" min="1" inputmode="numeric" id="c-k" placeholder="kcal per 100g" required>
+                <input type="number" step=".01" min="0" inputmode="decimal" id="c-f" placeholder="Fat per 100g" required>
+                <input type="number" step=".01" min="0" inputmode="decimal" id="c-c" placeholder="Carbs per 100g" required>
+                <input type="number" step=".01" min="0" inputmode="decimal" id="c-p" placeholder="Protein per 100g" required>
+                <input type="number" step="1" min="1" inputmode="numeric" id="c-u" placeholder="Portion size (g) (optional)">
+                <input type="text" id="c-b" placeholder="Barcode (optional)" autocomplete="off">
+                <button type="submit" class="mt">Save Product</button>
+            </form>
+        </section>
+
+        <section class="section">
+            <h2>My Products</h2>
+            <div id="custom-list"></div>
+            <button class="danger mt hidden" id="delete-custom-btn">Delete All Custom Products</button>
+        </section>
+
+        <section class="section hidden" id="export-section">
+            <h2>Export</h2>
+            <pre id="export-output" class="hidden"></pre>
+            <button id="copy-export-btn" class="hidden">Copy to Clipboard</button>
+            <button id="export-btn">Generate Export</button>
+        </section>
+
+        <section class="section">
+            <h2>Global Products</h2>
+            <button id="show-global-btn" class="subtle"></button>
+            <div id="global-products-list"></div>
+        </section>
+
+    <footer>
+        <a href="terms.html">Terms</a>
+    </footer>
+
+    <dialog id="confirm-dialog">
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+            <button id="confirm-cancel" type="button">Cancel</button>
+            <button id="confirm-ok" type="button">OK</button>
+        </div>
+    </dialog>
+
+    <script src="js/products.js?v=dd122646"></script>
+    <script src="js/app.js?v=7e5a3861"></script>
+
+</body>
+
+</html>
