@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Food Tracker</title>
+    <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/style.css?v=4a5f8361">
+</head>
+
+<body>
+    <nav class="day-nav">
+        <button type="button" id="prev-day-btn" class="day-nav-btn">←</button>
+        <span id="date-label" class="date-label"></span>
+        <button type="button" id="next-day-btn" class="day-nav-btn">→</button>
+    </nav>
+
+    <h1>Food Tracker</h1>
+
+    <!-- Totals -->
+    <section class="section">
+        <div class="stat-grid">
+            <div class="stat"><span class="stat-value accent" id="total-k">0</span><span class="stat-label">kcal</span></div>
+            <div class="stat"><span class="stat-value" id="total-f">0</span><span class="stat-label">Fett</span></div>
+            <div class="stat"><span class="stat-value" id="total-c">0</span><span class="stat-label">KH</span></div>
+            <div class="stat"><span class="stat-value" id="total-p">0</span><span class="stat-label">Eiweiß</span></div>
+        </div>
+    </section>
+
+    <!-- Add product -->
+    <section class="section">
+        <h2>Produkt hinzufügen</h2>
+        <div class="search-row">
+        <input type="text" id="search-input" placeholder="Produkte suchen…" autocomplete="off">
+        <button type="button" id="scan-search-btn" class="scan-btn" title="Barcode scannen" aria-label="Barcode scannen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+            </svg>
+        </button>
+    </div>
+        <div id="search-results" class="hidden"></div>
+        <div id="amount-section" class="hidden mt">
+            <label id="selected-label" for="amount-input"></label>
+            <input type="number" step="1" min="1" inputmode="numeric" id="amount-input" placeholder="Menge in Gramm">
+            <select id="meal-select">
+                <option value="breakfast">Frühstück</option>
+                <option value="lunch">Mittagessen</option>
+                <option value="dinner">Abendessen</option>
+                <option value="snacks">Snacks</option>
+            </select>
+            <button id="add-btn" class="mt">Hinzufügen</button>
+        </div>
+    </section>
+
+    <!-- Quick entry -->
+    <details>
+        <summary>Schnelleintrag</summary>
+        <form id="quick-form" class="mt">
+            <input type="text" id="q-n" placeholder="Name" required>
+            <input type="number" step="1" min="1" inputmode="numeric" id="q-k" placeholder="kcal (gesamt)" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="q-f" placeholder="Fett (g, gesamt)">
+            <input type="number" step=".01" min="0" inputmode="decimal" id="q-c" placeholder="Kohlenhydrate (g, gesamt)">
+            <input type="number" step=".01" min="0" inputmode="decimal" id="q-p" placeholder="Eiweiß (g, gesamt)">
+            <select id="q-meal-select">
+                <option value="breakfast">Frühstück</option>
+                <option value="lunch">Mittagessen</option>
+                <option value="dinner">Abendessen</option>
+                <option value="snacks">Snacks</option>
+            </select>
+            <button type="submit" class="mt">Hinzufügen</button>
+        </form>
+    </details>
+
+    <!-- Log -->
+    <section class="section">
+        <h2>Protokoll</h2>
+        <div id="log-list"></div>
+    </section>
+
+    <!-- Custom product form -->
+    <details id="custom-form-wrap">
+        <summary>Eigenes Produkt hinzufügen</summary>
+        <form id="custom-form" class="mt">
+            <input type="text" id="c-n" placeholder="Name" required>
+            <input type="number" step="1" min="1" inputmode="numeric" id="c-k" placeholder="kcal pro 100g" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="c-f" placeholder="Fett pro 100g" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="c-c" placeholder="Kohlenhydrate pro 100g" required>
+            <input type="number" step=".01" min="0" inputmode="decimal" id="c-p" placeholder="Eiweiß pro 100g" required>
+            <input type="number" step="1" min="1" inputmode="numeric" id="c-u" placeholder="Portionsgröße (g) (optional)">
+            <input type="text" id="c-b" placeholder="Barcode (optional)" autocomplete="off">
+            <button type="submit" class="mt">Produkt speichern</button>
+        </form>
+    </details>
+
+    <footer>
+        <a href="index.html" class="current">Tracker</a>
+        <a href="products.html">Produkte</a>
+        <a href="statistics.html">Statistik</a>
+        <a href="terms.html">Terms</a>
+    </footer>
+
+    <script src="js/common.js?v=61c5fac4"></script>
+    <script src="js/products.js?v=d379e2fb"></script>
+    <script src="js/app.js?v=c215e5ba"></script>
+
+</body>
+
+</html>
