@@ -1,0 +1,59 @@
+name: Deployment
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  actions: write
+  contents: read
+  deployments: write
+  id-token: write
+  pages: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  nuke:
+    runs-on: ubuntu-latest
+    env:
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: ${{ github.repository_owner }}
+      REPO: ${{ github.event.repository.name }}
+    steps:
+      - name: Nuke Deployments
+        run: |
+          RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/deployments")
+          IDS=$(echo "$RESPONSE" | jq -r '.[]? | select(. != null) | .id')
+          echo "$IDS" | while read ID; do
+            [ -n "$ID" ] && curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/deployments/$ID" || true
+          done
+
+      - name: Nuke Workflows
+        run: |
+          RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/actions/runs")
+          IDS=$(echo "$RESPONSE" | jq -r '(.workflow_runs // [])[] | select(type == "object") | .id')
+          echo "$IDS" | while read ID; do
+            [ -n "$ID" ] && curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$ID" || true
+          done
+
+  deploy:
+    needs: nuke
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: 'content'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
